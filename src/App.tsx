@@ -39,7 +39,7 @@ async function fileToHTMLImageElement(file: File): Promise<HTMLImageElement> {
 }
 
 // HTMLImageElement -> RawImage (przez canvas + ImageData)
-// (Ta ścieżka jest "typowo bezpieczna" dla TS i runtime.)
+
 function htmlImageToRawImage(img: HTMLImageElement): RawImage {
   const canvas = document.createElement("canvas");
   canvas.width = img.naturalWidth || img.width;
@@ -148,40 +148,42 @@ export default function App(): JSX.Element {
   }
 
   return (
-    <div className="mx-auto max-w-3xl p-6 space-y-6">
+    <div className="w-full h-screen max-w-6xl space-y-6 p-2 flex flex-col justify-center items-center text-center mx-auto  ">
       <Toaster
         position="bottom-center"
         richColors
       />
 
-      <header className="space-y-2">
-        <h1 className="text-2xl font-bold">Receipt Reader (in-browser OCR)</h1>
-        <p className="text-sm text-gray-500">
+      <header className="space-y-6">
+        <h1 className="text-2xl lg:text-6xl font-bold text-center">
+          Receipt Reader
+        </h1>
+        <p className="text-sm text-gray-300 lg:text-xl">
           Runs entirely in your browser using Transformers.js (TrOCR). No server
           required.
         </p>
       </header>
 
       <section className="space-y-3">
-        <label className="block text-sm font-medium">
+        <label className="block text-sm font-medium lg:text-xl">
           Upload receipt image (JPG/PNG)
         </label>
         <input
           type="file"
           accept="image/*"
           onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm file:mr-4 file:rounded-md file:border-0 file:bg-gray-900 file:px-4 file:py-2 file:text-white hover:file:bg-black"
+          className="block w-full text-sm lg:text-xl file:mr-4 file:rounded-md file:border-0 file:bg-blue-400 file:px-4 file:py-2 file:text-white hover:file:bg-black"
         />
         {preview && (
           <img
             src={preview}
             alt="preview"
-            className="mt-2 max-h-64 w-auto rounded-md border object-contain"
+            className="mt-2 max-h-64 lg:max-h-128 w-auto rounded-md border object-contain"
           />
         )}
       </section>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center justify-center gap-3">
         <button
           onClick={onRun}
           disabled={
@@ -189,7 +191,7 @@ export default function App(): JSX.Element {
             status.state === "running" ||
             status.state === "loading_model"
           }
-          className="rounded-md bg-black px-4 py-2 text-white disabled:opacity-50"
+          className="rounded-md bg-green-500 px-4 py-2 text-white disabled:opacity-50 lg:text-xl"
         >
           {status.state === "loading_model"
             ? "Downloading model…"
@@ -199,7 +201,7 @@ export default function App(): JSX.Element {
         </button>
         <button
           onClick={onClear}
-          className="rounded-md border px-4 py-2"
+          className="rounded-md border px-4 py-2 bg-red-400 lg:text-xl"
         >
           Clear
         </button>
@@ -251,14 +253,14 @@ export default function App(): JSX.Element {
             </table>
           </div>
           <p className="text-xs text-gray-500">
-            Heuristics only — improve with locales, better regex, or a
-            fine-tuned model later.
+            Heuristics only improve with locales,better regex,or a fine-tuned
+            model later.
           </p>
         </section>
       )}
 
       <footer className="pt-4 text-xs text-gray-500">
-        Model: <code>Xenova/trocr-base-printed</code> • libs:{" "}
+        Model: <code>Xenova/trocr-base-printed</code>
         <code>@xenova/transformers 3.7.5</code>,{" "}
         <code>onnxruntime-web 1.23.0</code>
         {status.msLoad != null && <> • Load {status.msLoad}ms</>}
@@ -291,7 +293,7 @@ function StatusBar({ status }: { status: Status }): JSX.Element {
       ? "text-blue-600"
       : "text-gray-600";
 
-  return <p className={`text-sm ${tone}`}>{text}</p>;
+  return <p className={`text-sm lg:text-xl ${tone}`}>{text}</p>;
 }
 
 function Row({
