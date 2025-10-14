@@ -1,5 +1,6 @@
 export type Message = {
-  id: "string";
-  text: "string";
+  id: string;
+  role: "user" | "ai";
+  text: string;
   createdAt: number;
 };
