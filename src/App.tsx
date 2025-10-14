@@ -38,6 +38,13 @@ export default function App(): React.ReactElement {
     ]);
   }, []);
 
+  const stopFetch = useCallback(() => {
+    if (abortRef.current) {
+      abortRef.current.abort();
+      toast.message("request Aborted");
+    }
+  }, []);
+
   const onSubmit = useCallback(
     async (values: FormValue) => {
       const prompt = values.prompt.trim();
@@ -45,15 +52,29 @@ export default function App(): React.ReactElement {
 
       makeMsg("user", prompt);
 
-      console.log(prompt);
-      reset();
+      abortRef.current?.abort();
+      abortRef.current = new AbortController();
+
+      try {
+        const res: AiResponse = await postPrompt(
+          prompt,
+          abortRef.current.signal
+        );
+        const aiText = (res.text ?? "").trim() || "(empty response)";
+        makeMsg("ai", aiText);
+        reset({ prompt: "" });
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error ? err.message : "AI request failed";
+        toast.error(message);
+      }
     },
-    [makeMsg]
+    [makeMsg, reset]
   );
 
   return (
     <div className="mx-auto h-screen max-w-3xl p-4 mt-2 flex flex-col justify-center items-center">
-      <section className=" max-h-[50vh] rounded border p-2 shadow-sm w-full bg-slate-600 border border-blue-500">
+      <section className=" max-h-[50vh] rounded border p-2 overflow-auto shadow-sm w-full bg-slate-600 border border-blue-500">
         {messages.length === 0 ? (
           <p className=" text-center text-sm ">
             Ask something the answer will show up here
@@ -86,6 +107,13 @@ export default function App(): React.ReactElement {
           disabled={isSubmitting}
         >
           {isSubmitting ? "Submitting" : "Submit"}
+        </button>
+        <button
+          type="button"
+          onClick={stop}
+          disabled={!isSubmitting}
+        >
+          STOP
         </button>
       </form>
     </div>
