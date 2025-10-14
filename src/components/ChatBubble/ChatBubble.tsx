@@ -3,9 +3,11 @@ import type { Message } from "../../types/types";
 export const ChatBubble = ({ m }: { m: Message }) => {
   const isUser = m.role === "user";
   return (
-    <section className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
+    <section
+      className={`flex ${isUser ? "justify-end" : "justify-start text-black"}`}
+    >
       <div
-        className={`rounded border p-2 ${
+        className={`rounded-2xl border p-2 ${
           isUser ? "border-green-500" : "border-red-500"
         }`}
       >

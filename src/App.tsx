@@ -44,15 +44,20 @@ export default function App(): React.ReactElement {
       if (!prompt) return;
 
       makeMsg("user", prompt);
+
+      console.log(prompt);
+      reset();
     },
     [makeMsg]
   );
 
   return (
-    <div className="mx-auto max-w-3xl p-4">
-      <section className="rounded border p-2 shadow-sm">
-        {!messages ? (
-          <p>Ask something the answer will show up here</p>
+    <div className="mx-auto h-screen max-w-3xl p-4 mt-2 flex flex-col justify-center items-center">
+      <section className=" max-h-[50vh] rounded border p-2 shadow-sm w-full bg-slate-600 border border-blue-500">
+        {messages.length === 0 ? (
+          <p className=" text-center text-sm ">
+            Ask something the answer will show up here
+          </p>
         ) : (
           messages.map((msg) => (
             <ChatBubble
@@ -65,8 +70,24 @@ export default function App(): React.ReactElement {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="flex gap-2 rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm"
-      ></form>
+        className="w-full flex flex-col items-center justify-center  gap-2 rounded-2xl border border-zinc-200  p-3 shadow-sm bg-blue-300 text-black"
+      >
+        <input
+          className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Ask Here..."
+          {...register("prompt")}
+        />
+        {errors.prompt && (
+          <p className=" text-red-600"> {errors.prompt.message}</p>
+        )}
+        <button
+          type="submit"
+          className="w-1/4 inline-flex items-center justify-center rounded-xl border border-zinc-300  px-4 py-2 text-sm font-medium bg-green-400 hover:bg-green-800  disabled:opacity-50"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting" : "Submit"}
+        </button>
+      </form>
     </div>
   );
 }
