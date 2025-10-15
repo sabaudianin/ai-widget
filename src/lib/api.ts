@@ -2,11 +2,16 @@ import { ApiError } from "./errors";
 
 export type AiResponse = { text?: string; error?: string; details?: unknown };
 
-const API_URL: string =
-  (typeof window !== "undefined" && window.__NEXT_API__) ||
+const BASE_URL: string =
+  import.meta.env.NEXT_PUBLIC_API_URL ||
   import.meta.env.VITE_API_URL ||
-  // fallback z env
-  "http://localhost:3000/api/ai";
+  "http://localhost:3000";
+
+const API_PROTOCOL = BASE_URL.includes("localhost") ? "http" : "https";
+
+const API_URL: string = BASE_URL.startsWith("http")
+  ? `${BASE_URL}/api/ai`
+  : `${API_PROTOCOL}://${BASE_URL}/api/ai`;
 
 export function postPrompt(
   prompt: string,
