@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import type { FormValue } from "./lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -64,20 +64,17 @@ export default function App(): React.ReactElement {
         makeMsg("ai", aiText);
         reset({ prompt: "" });
       } catch (err: unknown) {
-        // Sprawdzenie, czy błąd jest wynikiem celowego anulowania
         if (
           err instanceof Error &&
           (err.name === "AbortError" ||
             err.message === "signal is aborted without reason")
         ) {
-          // IGNORE: Celowe anulowanie żądania (np. przez stopFetch lub nowe zapytanie)
           console.log("Request aborted by user or new prompt.");
-          // Zwykle tutaj dodajesz komunikat do czatu, że AI się poddało, np:
+
           makeMsg("ai", " *(Generacja przerwana)*");
           return;
         }
 
-        // Błąd krytyczny (sieć, API 500/400)
         const message =
           err instanceof Error ? err.message : "AI request failed";
         toast.error(message);
@@ -87,10 +84,10 @@ export default function App(): React.ReactElement {
   );
 
   return (
-    <div className="mx-auto max-w-3xl p-4 mt-2 flex flex-col justify-end items-center">
-      <section className=" max-h-[50vh] rounded border p-2 overflow-auto shadow-sm w-full border border-blue-500">
+    <div className="h-screen mx-auto max-w-7xl mt-2 flex flex-col justify-center items-center gap-2 text-sm lg:text-2xl">
+      <section className="rounded p-2 overflow-auto shadow-sm w-full">
         {messages.length === 0 ? (
-          <p className=" text-center text-sm ">
+          <p className="text-center text-xs lg:text-sm ">
             Ask something the answer will show up here
           </p>
         ) : (
@@ -105,7 +102,7 @@ export default function App(): React.ReactElement {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col items-center justify-center  gap-2 rounded-2xl border border-zinc-200  p-3 shadow-sm bg-blue-300 text-black"
+        className="w-full flex flex-col items-center justify-center gap-2 shadow-sm text-black"
       >
         <input
           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
@@ -115,21 +112,23 @@ export default function App(): React.ReactElement {
         {errors.prompt && (
           <p className=" text-red-600"> {errors.prompt.message}</p>
         )}
-        <button
-          type="submit"
-          className="w-1/4 inline-flex items-center justify-center rounded-xl border border-zinc-300  px-4 py-2 text-sm font-medium bg-green-400 hover:bg-green-800  disabled:opacity-50"
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? "Submitting" : "Submit"}
-        </button>
-        <button
-          className="bg-red-300 p-2 rounded text-sm"
-          type="button"
-          onClick={stopFetch}
-          disabled={!isSubmitting}
-        >
-          Stop
-        </button>
+        <div className="flex justify-center gap-6 items-center w-full">
+          <button
+            className=" inline-flex bg-red-300 py-2 px-2 rounded "
+            type="button"
+            onClick={stopFetch}
+            disabled={!isSubmitting}
+          >
+            Stop
+          </button>
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center rounded py-2 px-8 font-medium bg-green-400 hover:bg-green-800  disabled:opacity-50"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Thinking" : "Ask"}
+          </button>
+        </div>
       </form>
     </div>
   );
