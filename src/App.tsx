@@ -27,9 +27,9 @@ export default function App(): React.ReactElement {
   const [messages, setMessages] = useState<Message[]>([]);
   const abortRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    return () => abortRef.current?.abort();
-  });
+  // useEffect(() => {
+  //   return () => abortRef.current?.abort();
+  // });
 
   const makeMsg = useCallback((role: Role, text: string) => {
     setMessages((prev) => [
@@ -64,6 +64,20 @@ export default function App(): React.ReactElement {
         makeMsg("ai", aiText);
         reset({ prompt: "" });
       } catch (err: unknown) {
+        // Sprawdzenie, czy błąd jest wynikiem celowego anulowania
+        if (
+          err instanceof Error &&
+          (err.name === "AbortError" ||
+            err.message === "signal is aborted without reason")
+        ) {
+          // IGNORE: Celowe anulowanie żądania (np. przez stopFetch lub nowe zapytanie)
+          console.log("Request aborted by user or new prompt.");
+          // Zwykle tutaj dodajesz komunikat do czatu, że AI się poddało, np:
+          makeMsg("ai", " *(Generacja przerwana)*");
+          return;
+        }
+
+        // Błąd krytyczny (sieć, API 500/400)
         const message =
           err instanceof Error ? err.message : "AI request failed";
         toast.error(message);
@@ -73,8 +87,8 @@ export default function App(): React.ReactElement {
   );
 
   return (
-    <div className="mx-auto h-screen max-w-3xl p-4 mt-2 flex flex-col justify-center items-center">
-      <section className=" max-h-[50vh] rounded border p-2 overflow-auto shadow-sm w-full bg-slate-600 border border-blue-500">
+    <div className="mx-auto max-w-3xl p-4 mt-2 flex flex-col justify-end items-center">
+      <section className=" max-h-[50vh] rounded border p-2 overflow-auto shadow-sm w-full border border-blue-500">
         {messages.length === 0 ? (
           <p className=" text-center text-sm ">
             Ask something the answer will show up here
@@ -109,11 +123,12 @@ export default function App(): React.ReactElement {
           {isSubmitting ? "Submitting" : "Submit"}
         </button>
         <button
+          className="bg-red-300 p-2 rounded text-sm"
           type="button"
-          onClick={stop}
+          onClick={stopFetch}
           disabled={!isSubmitting}
         >
-          STOP
+          Stop
         </button>
       </form>
     </div>

@@ -18,11 +18,21 @@ export function postPrompt(
     body: JSON.stringify({ prompt }),
     mode: "cors",
     signal,
-  }).then(async (res) => {
-    const data = (await res.json()) as AiResponse;
-    if (!res.ok) {
-      throw new ApiError(data.error || "Request failed", data.details);
-    }
-    return data;
-  });
+  })
+    .then(async (res) => {
+      const data = (await res.json()) as AiResponse;
+      if (!res.ok) {
+        // Rzucamy API Error tylko dla błędów HTTP (4xx, 5xx)
+        throw new ApiError(data.error || "Request failed", data.details);
+      }
+      return data;
+    })
+    .catch((error) => {
+      // Jeśli to błąd anulowania (AbortError), rzucamy go dalej (nie jako ApiError)
+      if (error.name === "AbortError") {
+        throw error;
+      }
+      // W przeciwnym razie rzucamy oryginalny błąd (np. błąd sieci)
+      throw error;
+    });
 }
