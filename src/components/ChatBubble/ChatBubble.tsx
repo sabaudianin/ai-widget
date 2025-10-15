@@ -5,8 +5,10 @@ export const ChatBubble = ({ m }: { m: Message }) => {
   return (
     <section className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <article
-        className={`rounded-2xl border p-2 whitespace-pre-wrap break-words bg-green-200 text-black ${
-          isUser ? "border-green-500 bg-green-200" : "border-red-500 bg-red-200"
+        className={`rounded-2xl border p-2 whitespace-pre-wrap break-words text-black ${
+          isUser
+            ? "border border-black bg-white/90 font-semibold p-4"
+            : " bg-slate-300/90 border border-slate-900"
         }`}
       >
         <p className="text-xs">

@@ -84,7 +84,7 @@ export default function App(): React.ReactElement {
   );
 
   return (
-    <div className="h-screen mx-auto max-w-7xl mt-2 flex flex-col justify-center items-center gap-2 text-sm lg:text-2xl">
+    <div className="h-screen mx-auto max-w-5xl py-2  flex flex-col justify-center items-center gap-2 text-sm lg:text-2xl">
       <section className="rounded p-2 overflow-auto shadow-sm w-full">
         {messages.length === 0 ? (
           <p className="text-center text-xs lg:text-sm ">
@@ -102,7 +102,7 @@ export default function App(): React.ReactElement {
 
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="w-full flex flex-col items-center justify-center gap-2 shadow-sm text-black"
+        className="w-full flex flex-col items-center justify-center gap-4 shadow-sm text-black px-1"
       >
         <input
           className="w-full rounded-xl border border-slate-300 bg-white px-3 py-2 outline-none focus:ring-2 focus:ring-blue-400"
@@ -123,10 +123,39 @@ export default function App(): React.ReactElement {
           </button>
           <button
             type="submit"
-            className="inline-flex items-center justify-center rounded py-2 px-8 font-medium bg-green-400 hover:bg-green-800  disabled:opacity-50"
+            className="inline-flex items-center justify-center rounded py-2 px-8 font-medium bg-green-400 hover:bg-green-700  disabled:opacity-50"
             disabled={isSubmitting}
           >
-            {isSubmitting ? "Thinking" : "Ask"}
+            {isSubmitting ? (
+              <span className="inline-flex items-center gap-2">
+                <svg
+                  className="h-4 w-4 animate-spin"
+                  viewBox="0 0 24 24"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    d="M4 12a8 8 0 018-8"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                    strokeLinecap="round"
+                  />
+                </svg>
+                <span>...Thinking...</span>
+              </span>
+            ) : (
+              "Ask a Question"
+            )}
           </button>
         </div>
       </form>
